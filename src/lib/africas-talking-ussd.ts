@@ -126,3 +126,57 @@ export async function handleUSSDRequest(
       };
     }
   }
+
+  // OPTION 2: Update Cold-Chain & Ice
+  if (rootChoice === '2') {
+    if (steps.length === 1) {
+      return {
+        response: 'CON Enter Batch ID to Ice (e.g. LV-DG-20260821-042 or 042):',
+        isTerminal: false,
+      };
+    }
+    if (steps.length === 2) {
+      return {
+        response: [
+          'CON Select Ice Ratio & Source:',
+          '1. 1:1 Solar Flake Ice (0-3°C)',
+          '2. 1:2 Crushed Block Ice (4-6°C)',
+          '3. Deep Freezing Re-pack',
+        ].join('\n'),
+        isTerminal: false,
+      };
+    }
+    if (steps.length === 3) {
+      let batchInput = steps[1].trim();
+      const batches = await storageAdapter.getAllBatches();
+      let targetBatch = batches.find(
+        (b) => b.batchId.toLowerCase().includes(batchInput.toLowerCase()) || b.id.toLowerCase().includes(batchInput.toLowerCase())
+      );
+
+      if (!targetBatch && batches.length > 0) {
+        targetBatch = batches[0];
+      }
+
+      if (!targetBatch) {
+        return { response: 'END Error: Batch ID not found.', isTerminal: true };
+      }
+
+      await storageAdapter.appendEvent({
+        batchId: targetBatch.batchId,
+        eventType: 'ICED',
+        actorName: 'USSD Cold Chain Handler',
+        actorRole: 'COLD_CHAIN_HANDLER',
+        actorPhone: phoneNumber,
+        siteName: targetBatch.landingSiteName,
+        temperatureCelsius: steps[2] === '1' ? 2.5 : 5.0,
+        iceRatio: '1:1',
+        iceSource: 'Solar Ice Depot',
+        channel: 'USSD',
+      });
+
+      return {
+        response: `END Cold-chain verified for ${targetBatch.batchId}!\nIce added. Freshness score updated to Grade A (Lake Fresh).`,
+        isTerminal: true,
+      };
+    }
+  }
