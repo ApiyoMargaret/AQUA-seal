@@ -1,0 +1,6 @@
+{
+  "name": "Aqua-Seal",
+  "description": "Lake Victoria small-scale fish traceability, USSD catch registration, cold-chain ledger, and micro-marketplace platform for BMUs and fishers.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
