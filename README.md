@@ -6,7 +6,7 @@
 ```
 
 ##  The Problem Statement (In-Depth Field Context)
-```
+<pre>
 Lake Victoria is Africa's largest freshwater fishery, supporting over **200,000 artisanal fishers** and sustaining livelihoods for upwards of **35 million people** across Kenya, Uganda, and Tanzania. Despite being a multi-million-dollar economic engine producing prized Nile Perch (*Lates niloticus*), Nile Tilapia (*Oreochromis niloticus*), and Lake Victoria Sardine / Omena (*Rastrineobola argentea*), the artisanal value chain suffers from systemic failures that trap fishers in cyclical poverty, degrade food safety, and jeopardize marine sustainability.
 
 
@@ -18,7 +18,7 @@ Lake Victoria is Africa's largest freshwater fishery, supporting over **200,000 
 |   • 30-40% Spoilage         • Delayed Cash Relay        • Counterfeit Sourcing    • Food Safety  |
 |   • Zero Credit Rating      • Informal Price-Fixing     • Opaque Transport        • Unknown Date |
 +--------------------------------------------------------------------------------------------------+
-```
+</pre>
 
 ### 1. The 4-Hour "Spoilage Cliff" & Post-Harvest Losses
 ```
