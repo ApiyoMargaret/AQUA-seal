@@ -61,7 +61,7 @@ export const Navbar: React.FC<Props> = ({
     return offlineQueue.subscribe(updateCount);
   }, []);
 
-    const handleManualSync = async () => {
+  const handleManualSync = async () => {
     setIsSyncing(true);
     try {
       await offlineQueue.syncAll();
@@ -73,4 +73,33 @@ export const Navbar: React.FC<Props> = ({
     }
   };
 
-  const currentSite = LANDING_SITES.find((s) => s.id === selectedSiteId) || LANDING_SITES[0];
+  const currentSite =
+    LANDING_SITES.find((s) => s.id === selectedSiteId) || LANDING_SITES[0];
+
+  return (
+    <header className="bg-[#004D40] text-white shadow-md sticky top-0 z-40">
+      {/* Top Header Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        {/* Brand */}
+        <div className="flex items-center gap-3.5">
+          <div className="bg-white/20 p-2.5 rounded-lg shrink-0 flex items-center justify-center">
+            <Anchor className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold tracking-tight uppercase leading-tight">
+                Aqua-Seal
+              </h1>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/15 text-teal-100 tracking-wider font-mono">
+                LAKE VICTORIA
+              </span>
+            </div>
+            <p className="text-[10px] opacity-75 tracking-widest leading-none mt-0.5 uppercase">
+              {currentSite.name} • {currentSite.county}
+            </p>
+          </div>
+        </div>
+
+    </header>
+  );
+};
