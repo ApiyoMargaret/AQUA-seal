@@ -123,3 +123,58 @@ async function startServer() {
       res.status(400).json({ success: false, error: err.message });
     }
   });
+
+  // Public Consumer & QR Verification Endpoint (Privacy-safe)
+  app.get('/api/verify/:batchId', async (req: Request, res: Response) => {
+    try {
+      const batch = await storageAdapter.getBatchById(req.params.batchId);
+      if (!batch) {
+        return res.status(404).json({
+          success: false,
+          verificationStatus: 'NOT_FOUND',
+          batchId: req.params.batchId,
+          message: `No authentic Lake Victoria record found for code "${req.params.batchId}". Please verify the tag or report counterfeit.`,
+        });
+      }
+
+      // Format privacy-sanitized payload for public consumer inspection
+      const sanitizedVerification = {
+        batchId: batch.batchId,
+        speciesName: SPECIES_CATALOG[batch.species]?.commonName || batch.species,
+        localSpeciesName: SPECIES_CATALOG[batch.species]?.localName,
+        scientificName: SPECIES_CATALOG[batch.species]?.scientificName,
+        weightKg: batch.currentWeightKg,
+        harvestDate: batch.harvestTimestamp,
+        landingDate: batch.landingTimestamp,
+        landingSite: batch.landingSiteName,
+        county: batch.county,
+        boatName: batch.boatName,
+        harvestMethod: batch.harvestMethod,
+        freshnessGrade: batch.freshnessGrade,
+        freshnessScorePercent: batch.freshnessScorePercent,
+        currentTemperatureCelsius: batch.currentTemperatureCelsius,
+        qualifiesLakeFreshSeal: batch.qualifiesLakeFreshSeal,
+        verificationStatus: batch.verificationStatus,
+        coldChainMaintained: batch.qualifiesLakeFreshSeal || batch.freshnessGrade === 'GRADE_A_LAKE_FRESH',
+        trustReport: {
+          ledgerEventsCount: batch.events.length,
+          lastVerifiedTimestamp: batch.updatedAt,
+          solarIcingVerified: batch.events.some((e) => e.eventType === 'ICED'),
+          inspectorAuditPassed: batch.events.some((e) => e.metadata.sensoryInspection?.passedQualityAudit),
+        },
+        timeline: batch.events.map((e) => ({
+          eventType: e.eventType,
+          timestamp: e.timestamp,
+          site: e.location.siteName,
+          actorRole: e.actor.role,
+          temperature: e.metadata.temperatureCelsius,
+          hash: e.eventHash,
+          notes: e.metadata.notes || e.metadata.correctionReason,
+        })),
+      };
+
+      res.json({ success: true, data: sanitizedVerification });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
