@@ -19,12 +19,13 @@ export const metadata: Metadata = {
   title: 'Aqua-Seal — Fish traceability for Lake Victoria',
   description:
     'Trace and verify fish batches landed at Lake Victoria. Built for small-scale fishers and Beach Management Units in Kenya.',
-  viewport: {
-    themeColor: '#1b4d6b',
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+};
+
+export const viewport = {
+  themeColor: '#1b4d6b',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
