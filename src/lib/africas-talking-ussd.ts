@@ -234,3 +234,25 @@ export async function handleUSSDRequest(
       };
     }
   }
+
+  //SACCO Credit Signal
+  if (rootChoice === '5') {
+    const signals = await storageAdapter.getSACCOCreditSignals(phoneNumber);
+    return {
+      response: `END SACCO Credit Summary:\nFisher: ${signals.fisherName}\n3-Mo Catch: ${signals.totalWeightHarvestedKg}kg (${signals.totalLandingsCount} landings)\nCold-Chain Score: ${signals.coldChainAdherenceRate}%\nEst. Credit Limit: KES ${signals.recommendedCreditLimitKes.toLocaleString()}\nRisk: ${signals.creditRiskBand}`,
+      isTerminal: true,
+    };
+  }
+
+  // Indicative Beach Prices
+  if (rootChoice === '6') {
+    const lines = [
+      'END Lake Victoria Indicative Beach Rates:',
+      '• Nile Perch (Mbuta): KES 480 - 520/kg',
+      '• Nile Tilapia (Ngege): KES 420 - 450/kg',
+      '• Omena (Dagaa): KES 220 - 240/kg',
+      '• Catfish (Mumi): KES 350 - 380/kg',
+      'Aqua-Seal Direct Fee: 1.5% (Buyers)',
+    ];
+    return { response: lines.join('\n'), isTerminal: true };
+  }
