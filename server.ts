@@ -178,3 +178,47 @@ async function startServer() {
       res.status(500).json({ success: false, error: err.message });
     }
   });
+
+  // Africa's Talking USSD Webhook Handler
+  app.post('/api/ussd', async (req: Request, res: Response) => {
+    try {
+      const { sessionId = 'session-demo', serviceCode = '*384*2782#', phoneNumber = '+254712345678', text = '' } = req.body;
+      const ussdResult = await handleUSSDRequest(sessionId, serviceCode, phoneNumber, text);
+
+      // Africa's Talking expects plain text response
+      res.setHeader('Content-Type', 'text/plain');
+      res.send(ussdResult.response);
+    } catch (err: any) {
+      console.error('USSD processing error:', err);
+      res.setHeader('Content-Type', 'text/plain');
+      res.send('END An error occurred processing your request. Please try again.');
+    }
+  });
+
+  // SMS Verification & Relay Webhook
+  app.post('/api/sms', async (req: Request, res: Response) => {
+    try {
+      const { from = '+254712345678', text = '' } = req.body;
+      const cleanText = text.trim().toUpperCase();
+
+      // If querying batch e.g. "SEAL 042" or "VERIFY LV-DG-20260821-042"
+      const batch = (await storageAdapter.getAllBatches()).find(
+        (b) => cleanText.includes(b.batchId.toUpperCase()) || cleanText.includes(b.batchId.slice(-3))
+      );
+
+      let reply = '';
+      if (batch) {
+        reply = `Aqua-Seal: ${batch.batchId} | ${batch.species} (${batch.currentWeightKg}kg) Landed: ${batch.landingSiteName}. Freshness: ${batch.freshnessGrade} (${batch.currentTemperatureCelsius}°C). Seal: ${batch.qualifiesLakeFreshSeal ? 'LAKE FRESH AUTHENTIC' : 'STANDARD'}.`;
+      } else {
+        reply = `Aqua-Seal: Unknown code "${text}". To verify fish, SMS "SEAL <BatchID>" to 22384 or dial *384*2782#.`;
+      }
+
+      res.json({
+        success: true,
+        to: from,
+        replyMessage: reply,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
