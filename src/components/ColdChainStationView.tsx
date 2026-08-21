@@ -41,3 +41,63 @@ export const ColdChainStationView: React.FC<Props> = ({ batches, onRefreshData }
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
   const selectedBatch = batches.find((b) => b.batchId === selectedBatchId) || batches[0];
+const handleApplyColdChain = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBatch) return;
+
+    setIsSubmitting(true);
+    try {
+      let payload: any = {
+        batchId: selectedBatch.batchId,
+        actorName: 'Mama Lucy Cold Store Operator',
+        actorRole: 'COLD_CHAIN_HANDLER',
+        siteName: selectedBatch.landingSiteName,
+      };
+
+      if (actionTab === 'ICE') {
+        payload.eventType = 'ICED';
+        payload.temperatureCelsius = parseFloat(tempInput) || 3.0;
+        payload.iceRatio = iceRatio;
+        payload.iceSource = iceSource;
+        payload.notes = `Solar flake ice refreshed at 1:${iceRatio === '1:1' ? '1' : '2'} ratio. Temperature measured at ${tempInput}°C.`;
+      } else if (actionTab === 'INSPECT') {
+        payload.eventType = 'INSPECTED';
+        payload.actorRole = 'COUNTY_OFFICER';
+        payload.actorName = 'Achieng Perez (County Inspector)';
+        payload.sensoryInspection = {
+          eyes: sensoryEyes,
+          gills: sensoryGills,
+          flesh: sensoryFlesh,
+          odor: sensoryOdor,
+          passedQualityAudit: sensoryEyes === 'clear_bulging' && sensoryGills === 'bright_red_mucus_free',
+        };
+        payload.notes = 'FAO Fish Quality Index inspection performed.';
+      } else if (actionTab === 'TRANSPORT') {
+        payload.eventType = 'TRANSPORTED';
+        payload.transportVehicle = vehicle;
+        payload.transportDestination = destination;
+        payload.temperatureCelsius = 3.8;
+        payload.notes = `Dispatched in ${vehicle} heading to ${destination}. Insulated box sealed.`;
+      }
+
+      const res = await fetch(`/api/batches/${selectedBatch.batchId}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setSuccessNotice(`Successfully logged ${actionTab} event for batch ${selectedBatch.batchId}!`);
+        setTimeout(() => setSuccessNotice(null), 5000);
+        onRefreshData();
+      } else {
+        alert(data.error || 'Failed to update cold chain');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating cold-chain');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
