@@ -180,3 +180,31 @@ export async function handleUSSDRequest(
       };
     }
   }
+
+  // OPTION 3: Verify Batch ID
+  if (rootChoice === '3') {
+    if (steps.length === 1) {
+      return {
+        response: 'CON Enter Batch Code (e.g. 042 or LV-DG-20260821-042):',
+        isTerminal: false,
+      };
+    }
+    if (steps.length === 2) {
+      const code = steps[1].trim().toUpperCase();
+      const batches = await storageAdapter.getAllBatches();
+      const batch = batches.find((b) => b.batchId.toUpperCase().includes(code) || b.id.toUpperCase().includes(code));
+
+      if (!batch) {
+        return {
+          response: `END Batch "${code}" not found. Please verify the 4-digit code on the fish gill tag or paper receipt.`,
+          isTerminal: true,
+        };
+      }
+
+      const sp = SPECIES_CATALOG[batch.species]?.commonName || batch.species;
+      return {
+        response: `END ${batch.batchId} VERIFIED!\nFish: ${sp} (${batch.currentWeightKg}kg)\nOrigin: ${batch.boatName}, ${batch.landingSiteName}\nFreshness: ${batch.freshnessGrade} (${batch.currentTemperatureCelsius}°C)\nSeal: ${batch.qualifiesLakeFreshSeal ? 'LAKE FRESH AUTHENTIC' : 'STANDARD'}`,
+        isTerminal: true,
+      };
+    }
+  }
