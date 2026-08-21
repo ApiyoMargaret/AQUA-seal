@@ -163,6 +163,19 @@ export const Navbar: React.FC<Props> = ({
             </button>
           </div>
 
+          {/* Offline Queue Sync Indicator */}
+          {queuedCount > 0 && (
+            <button
+              onClick={handleManualSync}
+              disabled={isSyncing || networkMode === "OFFLINE"}
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-400 text-slate-900 rounded-lg text-xs font-bold transition-colors shadow-xs animate-pulse"
+            >
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`}
+              />
+              <span>{queuedCount} Queued Sync</span>
+            </button>
+          )}
 
         </div>
       </div>
