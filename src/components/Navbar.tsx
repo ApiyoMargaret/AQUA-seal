@@ -100,6 +100,111 @@ export const Navbar: React.FC<Props> = ({
           </div>
         </div>
 
+        {/* Center / Right controls */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Landing Site Selector */}
+          <div className="flex items-center bg-black/20 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white">
+            <span className="text-teal-200 mr-1.5 font-medium text-[11px] uppercase tracking-wider">
+              BMU:
+            </span>
+            <select
+              value={selectedSiteId}
+              onChange={(e) => setSelectedSiteId(e.target.value)}
+              className="bg-transparent border-none text-white font-semibold focus:outline-hidden text-xs cursor-pointer"
+            >
+              {LANDING_SITES.map((site) => (
+                <option
+                  key={site.id}
+                  value={site.id}
+                  className="bg-[#004D40] text-white"
+                >
+                  {site.name} ({site.county})
+                </option>
+              ))}
+            </select>
+          </div>
+
+
+        </div>
+      </div>
+
+      {/* Navigation Sub-Tabs */}
+      <div className="bg-[#00382E] border-t border-teal-900/60 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 py-1.5 text-xs font-medium">
+          <button
+            onClick={() => setActiveTab("REGISTRATION")}
+            className={`px-3.5 py-1.5 rounded-lg flex items-center space-x-1.5 whitespace-nowrap text-xs font-semibold transition-all ${
+              activeTab === "REGISTRATION"
+                ? "bg-white/20 text-white shadow-xs"
+                : "text-teal-100/80 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-teal-300" />
+            <span>BMU Catch Desk</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("LEDGER")}
+            className={`px-3.5 py-1.5 rounded-lg flex items-center space-x-1.5 whitespace-nowrap text-xs font-semibold transition-all ${
+              activeTab === "LEDGER"
+                ? "bg-white/20 text-white shadow-xs"
+                : "text-teal-100/80 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-teal-300" />
+            <span>Live Traceability Ledger</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("COLD_CHAIN")}
+            className={`px-3.5 py-1.5 rounded-lg flex items-center space-x-1.5 whitespace-nowrap text-xs font-semibold transition-all ${
+              activeTab === "COLD_CHAIN"
+                ? "bg-white/20 text-white shadow-xs"
+                : "text-teal-100/80 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <Thermometer className="w-3.5 h-3.5 text-teal-300" />
+            <span>Cold-Chain & Ice Hub</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("VERIFICATION")}
+            className={`px-3.5 py-1.5 rounded-lg flex items-center space-x-1.5 whitespace-nowrap text-xs font-semibold transition-all ${
+              activeTab === "VERIFICATION"
+                ? "bg-white/20 text-white shadow-xs"
+                : "text-teal-100/80 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+            <span>Consumer QR Verification</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("MARKETPLACE")}
+            className={`px-3.5 py-1.5 rounded-lg flex items-center space-x-1.5 whitespace-nowrap text-xs font-semibold transition-all ${
+              activeTab === "MARKETPLACE"
+                ? "bg-white/20 text-white shadow-xs"
+                : "text-teal-100/80 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <ShoppingBag className="w-3.5 h-3.5 text-teal-300" />
+            <span>Marketplace Discover (1.5% Fee)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("SACCO_CREDIT")}
+            className={`px-3.5 py-1.5 rounded-lg flex items-center space-x-1.5 whitespace-nowrap text-xs font-semibold transition-all ${
+              activeTab === "SACCO_CREDIT"
+                ? "bg-white/20 text-white shadow-xs"
+                : "text-teal-100/80 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <CreditCard className="w-3.5 h-3.5 text-teal-300" />
+            <span>SACCO Credit Report</span>
+          </button>
+        </div>
+      </div>
+
     </header>
   );
 };
