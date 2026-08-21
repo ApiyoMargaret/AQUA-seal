@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-# AQUA-seal
-```
-Fish quality and handling tracking application to ensure fish quality during  packaging, transportaion to final destination.
-
-```
-## 
- 
-
- 
-=======
 Aqua-Seal is a USSD-first fish traceability and micro-marketplace platform for Lake Victoria fishers, BMUs, fishmongers, and buyers. It requires no blockchain and no smartphone for the core flow.
 
 ## Repository structure
@@ -23,4 +12,3 @@ aqua-seal/
 ```
 
 Status: Repository structure scaffolded. Architecture, ADRs, and implementation to follow.
->>>>>>> remotes/origin/develop
