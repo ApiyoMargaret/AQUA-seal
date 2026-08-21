@@ -1,7 +1,8 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { LogOut, User as UserIcon, Settings, ChevronDown } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { LogOut, User as UserIcon, Settings, ChevronDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Brand } from './brand';
 import { NAV_ITEMS } from './nav-config';
 import { roleLabel } from '@/lib/format';
+import { signOut } from '@/lib/api/auth';
 import type { User } from '@/types';
 
 export interface HeaderProps {
@@ -23,6 +25,9 @@ export interface HeaderProps {
 
 export function Header({ user }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [menuOpen, setMenuOpen] = useState(false);
   const currentItem = NAV_ITEMS.find(
     (i) => pathname === i.href || pathname.startsWith(`${i.href}/`)
   );
@@ -48,7 +53,7 @@ export function Header({ user }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        <DropdownMenu>
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 px-2">
               <Avatar className="h-8 w-8">
@@ -78,8 +83,21 @@ export function Header({ user }: HeaderProps) {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled>
-              <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+            <DropdownMenuItem
+              disabled={isPending}
+              onSelect={(e) => {
+                e.preventDefault();
+                startTransition(async () => {
+                  await signOut();
+                  router.push('/login');
+                });
+              }}
+            >
+              {isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+              )}
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
