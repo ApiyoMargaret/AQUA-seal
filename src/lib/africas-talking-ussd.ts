@@ -1,4 +1,4 @@
-import { LANDING_SITES, SPECIES_CATALOG, SpeciesType } from '../types/aqua-seal';
+import { SPECIES_CATALOG, SpeciesType } from '../types/aqua-seal';
 import { storageAdapter } from './storage-adapter';
 
 export interface USSDResponse {
@@ -36,12 +36,7 @@ export async function handleUSSDRequest(
     return { response: menu, isTerminal: false };
   }
 
-  // Future option blocks go here...
-
-  return { response: 'END Invalid choice. Please dial again.', isTerminal: true };
-}
-
-// OPTION 1: Register Catch
+  // OPTION 1: Register Catch
   if (rootChoice === '1') {
     // Step 1: Choose Species
     if (steps.length === 1) {
@@ -99,6 +94,12 @@ export async function handleUSSDRequest(
       const weightKg = parseFloat(steps[3]) || 25;
 
       const boats = await storageAdapter.getRegisteredBoats();
+      if (!boats || boats.length === 0) {
+        return {
+          response: 'END Error: No registered boats found for this BMU. Please register your boat first.',
+          isTerminal: true,
+        };
+      }
       const boat = boats.find((b) => b.bmuSiteId === siteId) || boats[0];
 
       const newBatch = await storageAdapter.createBatch({
@@ -147,7 +148,7 @@ export async function handleUSSDRequest(
       };
     }
     if (steps.length === 3) {
-      let batchInput = steps[1].trim();
+      const batchInput = steps[1].trim();
       const batches = await storageAdapter.getAllBatches();
       let targetBatch = batches.find(
         (b) => b.batchId.toLowerCase().includes(batchInput.toLowerCase()) || b.id.toLowerCase().includes(batchInput.toLowerCase())
@@ -235,7 +236,7 @@ export async function handleUSSDRequest(
     }
   }
 
-  //SACCO Credit Signal
+  // OPTION 5: SACCO Credit Signal
   if (rootChoice === '5') {
     const signals = await storageAdapter.getSACCOCreditSignals(phoneNumber);
     return {
@@ -244,7 +245,7 @@ export async function handleUSSDRequest(
     };
   }
 
-  // Indicative Beach Prices
+  // OPTION 6: Indicative Beach Prices
   if (rootChoice === '6') {
     const lines = [
       'END Lake Victoria Indicative Beach Rates:',
@@ -256,3 +257,6 @@ export async function handleUSSDRequest(
     ];
     return { response: lines.join('\n'), isTerminal: true };
   }
+
+  return { response: 'END Invalid choice. Please dial again.', isTerminal: true };
+}
