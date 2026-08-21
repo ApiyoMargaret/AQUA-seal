@@ -306,3 +306,140 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                           </div>
                         </div>
 
+                          {/* Actor info */}
+                        <div className="text-xs text-slate-600 flex items-center space-x-2">
+                          <User className="w-3.5 h-3.5 text-slate-400" />
+                          <span>
+                            Actor: <strong className="text-slate-800">{event.actor.name}</strong> (
+                            {event.actor.role})
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-mono">
+                            {event.channel}
+                          </span>
+                        </div>
+
+                        {/* Metadata specifics */}
+                        {event.metadata && (
+                          <div className="text-xs text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 space-y-1">
+                            {event.metadata.weightKg !== undefined && (
+                              <div>Weight: <strong>{event.metadata.weightKg} kg</strong></div>
+                            )}
+                            {event.metadata.temperatureCelsius !== undefined && (
+                              <div>Temperature: <strong>{event.metadata.temperatureCelsius}°C</strong> (Ice: {event.metadata.iceRatio || '1:1'})</div>
+                            )}
+                            {event.metadata.iceSource && (
+                              <div>Ice Source: <strong>{event.metadata.iceSource}</strong></div>
+                            )}
+                            {event.metadata.sensoryInspection && (
+                              <div className="pt-1 text-[11px] border-t border-slate-100">
+                                <strong>FAO Sensory Audit:</strong> Eyes ({event.metadata.sensoryInspection.eyes}), Gills ({event.metadata.sensoryInspection.gills}), Odor ({event.metadata.sensoryInspection.odor})
+                              </div>
+                            )}
+                            {event.metadata.correctionReason && (
+                              <div className="text-rose-700 bg-rose-50 p-2 rounded border border-rose-200 font-medium">
+                                <strong>Compensating Reason:</strong> {event.metadata.correctionReason}
+                              </div>
+                            )}
+                            {event.metadata.notes && !event.metadata.correctionReason && (
+                              <div className="italic text-slate-600">Note: {event.metadata.notes}</div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Cryptographic Hash Trail */}
+                        <div className="text-[10px] font-mono text-slate-400 flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200">
+                          <span>Prev: {event.previousEventHash.slice(0, 10)}...</span>
+                          <ArrowRight className="w-2.5 h-2.5" />
+                          <span className="text-[#006064] font-bold">Hash: {event.eventHash}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl p-12 text-center text-slate-400 border border-slate-200">
+              No batch selected.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Compensating Correction Modal */}
+      {showCompensateModal && selectedBatch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden border border-slate-200">
+            <div className="bg-rose-900 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-5 h-5 text-rose-300" />
+                <h3 className="font-bold text-base">Append Compensating Correction</h3>
+              </div>
+              <button
+                onClick={() => setShowCompensateModal(false)}
+                className="text-rose-200 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAppendCorrection} className="p-6 space-y-4">
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900 space-y-1">
+                <strong>Immutable Ledger Principle:</strong>
+                <p>
+                  Historical records are never deleted or rewritten. This correction will append a new verified
+                  compensating block referencing the previous transaction.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Target Batch ID
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value={selectedBatch.batchId}
+                  className="w-full bg-slate-100 border border-slate-200 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-700"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Documented Reason for Adjustment
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={correctionReason}
+                  onChange={(e) => setCorrectionReason(e.target.value)}
+                  placeholder="e.g. Digital scale recalibration: Adjusted net weight from 50kg to 58kg following secondary check."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 focus:outline-hidden focus:ring-1 focus:ring-rose-600"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowCompensateModal(false)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAppending}
+                  className="px-5 py-2 text-xs font-bold text-white bg-rose-700 hover:bg-rose-800 rounded-lg shadow-xs"
+                >
+                  {isAppending ? 'Appending Block...' : 'Confirm & Append Block'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
