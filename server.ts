@@ -222,3 +222,65 @@ async function startServer() {
       res.status(500).json({ success: false, error: err.message });
     }
   });
+
+  // Marketplace Listings
+  app.get('/api/marketplace', async (req: Request, res: Response) => {
+    try {
+      const batches = await storageAdapter.getAllBatches();
+      const listed = batches.filter((b) => b.listing?.isListed && b.status === 'ACTIVE_LISTED');
+      res.json({ success: true, count: listed.length, data: listed });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // SACCO Explainable Credit Signals
+  app.get('/api/sacco/credit-signals/:fisherId', async (req: Request, res: Response) => {
+    try {
+      const signals = await storageAdapter.getSACCOCreditSignals(req.params.fisherId);
+      res.json({ success: true, data: signals });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // BMU Landing Site Stats
+  app.get('/api/bmu/stats', async (req: Request, res: Response) => {
+    try {
+      const stats = await storageAdapter.getBMUStats();
+      res.json({ success: true, data: stats });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Offline Sync Batch Ingestion
+  app.post('/api/offline-sync', async (req: Request, res: Response) => {
+    try {
+      const { items } = req.body;
+      if (!Array.isArray(items)) {
+        return res.status(400).json({ success: false, error: 'Expected items array' });
+      }
+
+      const results = [];
+      for (const item of items) {
+        if (item.type === 'CREATE_BATCH') {
+          const resBatch = await storageAdapter.createBatch({
+            ...item.payload,
+            channel: 'WEB_OFFLINE_SYNC',
+          });
+          results.push({ id: item.id, status: 'SYNCED', data: resBatch });
+        } else if (item.type === 'APPEND_EVENT') {
+          const resBatch = await storageAdapter.appendEvent({
+            ...item.payload,
+            channel: 'WEB_OFFLINE_SYNC',
+          });
+          results.push({ id: item.id, status: 'SYNCED', data: resBatch });
+        }
+      }
+
+      res.json({ success: true, processed: results.length, results });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
