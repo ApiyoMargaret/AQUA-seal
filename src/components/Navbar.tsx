@@ -177,6 +177,43 @@ export const Navbar: React.FC<Props> = ({
             </button>
           )}
 
+          {/* USSD Phone Launcher */}
+          <button
+            onClick={onOpenUSSD}
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg text-xs font-mono font-bold transition-colors"
+            title="Dial Africa's Talking USSD Code"
+          >
+            <Phone className="w-3.5 h-3.5 text-teal-200" />
+            <span>*384*2782#</span>
+          </button>
+
+          {/* SMS / WhatsApp Launcher */}
+          <button
+            onClick={onOpenSMS}
+            className="p-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg transition-colors"
+            title="Open WhatsApp & SMS Verification Simulator"
+          >
+            <MessageSquare className="w-4 h-4 text-teal-200" />
+          </button>
+
+          {/* Officer Info Badge */}
+          <div className="hidden lg:block text-right pl-2 border-l border-white/20">
+            <p className="text-xs font-semibold leading-tight">
+              {currentSite.bmuLeader}
+            </p>
+            <p className="text-[10px] opacity-70 leading-tight">
+              BMU Desk ID: {currentSite.code}-01
+            </p>
+          </div>
+
+          {/* New Catch Quick Button */}
+          <button
+            onClick={onOpenNewCatch}
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#006064] hover:bg-[#00382E] text-white rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm transition-colors border border-teal-300/30"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Log Catch</span>
+          </button>
         </div>
       </div>
 
