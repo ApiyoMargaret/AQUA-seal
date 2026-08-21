@@ -143,3 +143,53 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
           </div>
         </div>
       </div>
+
+            {/* Main Split View */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Batch Selector List */}
+        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100">
+            <h2 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+              Tracked Fish Batches ({filteredBatches.length})
+            </h2>
+          </div>
+
+          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+            {filteredBatches.map((batch) => {
+              const isSelected = selectedBatch?.batchId === batch.batchId;
+              return (
+                <button
+                  key={batch.id}
+                  onClick={() => setSelectedBatchId(batch.batchId)}
+                  className={`w-full text-left p-3.5 rounded-lg border transition-all ${
+                    isSelected
+                      ? 'border-[#004D40] bg-[#E0F2F1] shadow-xs ring-1 ring-[#004D40]'
+                      : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold font-mono text-xs text-slate-900">{batch.batchId}</span>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        batch.qualifiesLakeFreshSeal
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : 'bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      {batch.qualifiesLakeFreshSeal ? '★ Lake Fresh' : batch.status}
+                    </span>
+                  </div>
+
+                  <div className="text-xs font-semibold text-slate-800 mt-1">
+                    {batch.species} • {batch.currentWeightKg} kg
+                  </div>
+
+                  <div className="text-[11px] text-slate-500 mt-0.5 flex justify-between">
+                    <span>{batch.landingSiteName}</span>
+                    <span className="font-mono text-[#006064] font-semibold">{batch.events.length} blocks</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
