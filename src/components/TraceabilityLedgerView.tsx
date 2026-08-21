@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Layers,
   Search,
@@ -16,8 +16,13 @@ import {
   Printer,
   ChevronDown,
   ChevronRight,
-} from 'lucide-react';
-import { FishBatch, TraceabilityEvent, TraceabilityEventType, UserRole } from '../types/aqua-seal';
+} from "lucide-react";
+import {
+  FishBatch,
+  TraceabilityEvent,
+  TraceabilityEventType,
+  UserRole,
+} from "../types/aqua-seal";
 
 interface Props {
   batches: FishBatch[];
@@ -30,11 +35,13 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
   onOpenTagModal,
   onRefreshData,
 }) => {
-  const [selectedBatchId, setSelectedBatchId] = useState<string>(batches[0]?.batchId || '');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBatchId, setSelectedBatchId] = useState<string>(
+    batches[0]?.batchId || "",
+  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [showCompensateModal, setShowCompensateModal] = useState(false);
-  const [correctionReason, setCorrectionReason] = useState('');
-  const [correctionWeight, setCorrectionWeight] = useState('');
+  const [correctionReason, setCorrectionReason] = useState("");
+  const [correctionWeight, setCorrectionWeight] = useState("");
   const [isAppending, setIsAppending] = useState(false);
 
   const filteredBatches = batches.filter(
@@ -42,7 +49,7 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
       b.batchId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       b.boatName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       b.landingSiteName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.species.toLowerCase().includes(searchQuery.toLowerCase())
+      b.species.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const selectedBatch =
@@ -54,36 +61,39 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
     e.preventDefault();
     if (!selectedBatch) return;
     if (!correctionReason.trim()) {
-      alert('Please provide a documented reason for this compensating ledger entry.');
+      alert(
+        "Please provide a documented reason for this compensating ledger entry.",
+      );
       return;
     }
 
     setIsAppending(true);
     try {
       const res = await fetch(`/api/batches/${selectedBatch.batchId}/events`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          eventType: 'COMPENSATING_CORRECTION',
-          actorName: 'Otieno Maurice (BMU Officer)',
-          actorRole: 'BMU_CLERK',
+          eventType: "COMPENSATING_CORRECTION",
+          actorName: "Otieno Maurice (BMU Officer)",
+          actorRole: "BMU_CLERK",
           siteName: selectedBatch.landingSiteName,
           correctionReason,
-          originalEventId: selectedBatch.events[selectedBatch.events.length - 1]?.id,
+          originalEventId:
+            selectedBatch.events[selectedBatch.events.length - 1]?.id,
           notes: correctionReason,
         }),
       });
       const data = await res.json();
       if (data.success) {
         setShowCompensateModal(false);
-        setCorrectionReason('');
+        setCorrectionReason("");
         onRefreshData();
       } else {
-        alert(data.error || 'Failed to append correction');
+        alert(data.error || "Failed to append correction");
       }
     } catch (err) {
       console.error(err);
-      alert('Network error appending correction');
+      alert("Network error appending correction");
     } finally {
       setIsAppending(false);
     }
@@ -91,26 +101,26 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
 
   const getEventBadgeColor = (type: TraceabilityEventType) => {
     switch (type) {
-      case 'HARVESTED':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'LANDED':
-        return 'bg-teal-100 text-teal-800 border-teal-200';
-      case 'WEIGHED':
-        return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-      case 'ICED':
-        return 'bg-cyan-100 text-cyan-800 border-cyan-200';
-      case 'INSPECTED':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'TRANSPORTED':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'LISTED':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'SOLD':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'COMPENSATING_CORRECTION':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
+      case "HARVESTED":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "LANDED":
+        return "bg-teal-100 text-teal-800 border-teal-200";
+      case "WEIGHED":
+        return "bg-indigo-100 text-indigo-800 border-indigo-200";
+      case "ICED":
+        return "bg-cyan-100 text-cyan-800 border-cyan-200";
+      case "INSPECTED":
+        return "bg-emerald-100 text-emerald-800 border-emerald-200";
+      case "TRANSPORTED":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      case "LISTED":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "SOLD":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "COMPENSATING_CORRECTION":
+        return "bg-rose-100 text-rose-800 border-rose-200";
       default:
-        return 'bg-slate-100 text-slate-800 border-slate-200';
+        return "bg-slate-100 text-slate-800 border-slate-200";
     }
   };
 
@@ -123,10 +133,13 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
             <Layers className="w-3.5 h-3.5" />
             <span>Append-Only Ledger &amp; Provenance Chain</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold mt-1 tracking-tight">Immutable Traceability Events</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mt-1 tracking-tight">
+            Immutable Traceability Events
+          </h1>
           <p className="text-xs text-teal-100/90 mt-1 max-w-xl">
-            Every catch, ice application, sensory audit, and transfer produces a cryptographically hashed block.
-            Historical events cannot be modified or deleted.
+            Every catch, ice application, sensory audit, and transfer produces a
+            cryptographically hashed block. Historical events cannot be modified
+            or deleted.
           </p>
         </div>
 
@@ -144,7 +157,7 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
         </div>
       </div>
 
-            {/* Main Split View */}
+      {/* Main Split View */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Batch Selector List */}
         <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-xs space-y-3">
@@ -163,20 +176,24 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                   onClick={() => setSelectedBatchId(batch.batchId)}
                   className={`w-full text-left p-3.5 rounded-lg border transition-all ${
                     isSelected
-                      ? 'border-[#004D40] bg-[#E0F2F1] shadow-xs ring-1 ring-[#004D40]'
-                      : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      ? "border-[#004D40] bg-[#E0F2F1] shadow-xs ring-1 ring-[#004D40]"
+                      : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold font-mono text-xs text-slate-900">{batch.batchId}</span>
+                    <span className="font-bold font-mono text-xs text-slate-900">
+                      {batch.batchId}
+                    </span>
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         batch.qualifiesLakeFreshSeal
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                          : 'bg-slate-100 text-slate-700'
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                          : "bg-slate-100 text-slate-700"
                       }`}
                     >
-                      {batch.qualifiesLakeFreshSeal ? '★ Lake Fresh' : batch.status}
+                      {batch.qualifiesLakeFreshSeal
+                        ? "★ Lake Fresh"
+                        : batch.status}
                     </span>
                   </div>
 
@@ -186,14 +203,17 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
 
                   <div className="text-[11px] text-slate-500 mt-0.5 flex justify-between">
                     <span>{batch.landingSiteName}</span>
-                    <span className="font-mono text-[#006064] font-semibold">{batch.events.length} blocks</span>
+                    <span className="font-mono text-[#006064] font-semibold">
+                      {batch.events.length} blocks
+                    </span>
                   </div>
                 </button>
               );
             })}
           </div>
         </div>
-                {/* Right: Selected Batch Timeline & Hash Explorer */}
+
+        {/* Right: Selected Batch Timeline & Hash Explorer */}
         <div className="lg:col-span-2 space-y-6">
           {selectedBatch ? (
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-6">
@@ -211,7 +231,12 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                     )}
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Vessel: <span className="font-semibold text-slate-800">{selectedBatch.boatName}</span> ({selectedBatch.boatRegistration}) • Landing: {selectedBatch.landingSiteName}
+                    Vessel:{" "}
+                    <span className="font-semibold text-slate-800">
+                      {selectedBatch.boatName}
+                    </span>{" "}
+                    ({selectedBatch.boatRegistration}) • Landing:{" "}
+                    {selectedBatch.landingSiteName}
                   </p>
                 </div>
 
@@ -237,7 +262,9 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
               {/* Status & Freshness Metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Current Temp</div>
+                  <div className="text-[10px] uppercase font-bold text-slate-400">
+                    Current Temp
+                  </div>
                   <div className="text-base font-bold text-slate-900 font-mono flex items-center space-x-1">
                     <Thermometer className="w-4 h-4 text-teal-700" />
                     <span>{selectedBatch.currentTemperatureCelsius}°C</span>
@@ -245,26 +272,33 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Freshness Score</div>
+                  <div className="text-[10px] uppercase font-bold text-slate-400">
+                    Freshness Score
+                  </div>
                   <div className="text-base font-bold text-[#004D40] font-mono">
                     {selectedBatch.freshnessScorePercent}%
                   </div>
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Net Weight</div>
+                  <div className="text-[10px] uppercase font-bold text-slate-400">
+                    Net Weight
+                  </div>
                   <div className="text-base font-bold text-slate-900 font-mono">
                     {selectedBatch.currentWeightKg} kg
                   </div>
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Ledger Blocks</div>
+                  <div className="text-[10px] uppercase font-bold text-slate-400">
+                    Ledger Blocks
+                  </div>
                   <div className="text-base font-bold text-slate-900 font-mono">
                     {selectedBatch.events.length} Verified
                   </div>
                 </div>
               </div>
+
               {/* Event Timeline */}
               <div className="space-y-4">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
@@ -274,8 +308,8 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
 
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                   {selectedBatch.events.map((event, idx) => (
-                    <div key={event.id} className="relative group"></div>
-                     {/* Timeline Dot */}
+                    <div key={event.id} className="relative group">
+                      {/* Timeline Dot */}
                       <div className="absolute -left-6 top-1.5 w-3.5 h-3.5 rounded-full bg-[#004D40] border-2 border-white ring-2 ring-teal-200" />
 
                       <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2 hover:border-teal-400 transition-colors">
@@ -283,10 +317,10 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                           <div className="flex items-center space-x-2">
                             <span
                               className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getEventBadgeColor(
-                                event.eventType
+                                event.eventType,
                               )}`}
                             >
-                              {event.eventType.replace(/_/g, ' ')}
+                              {event.eventType.replace(/_/g, " ")}
                             </span>
                             <span className="text-xs font-semibold text-slate-800">
                               {event.location.siteName}
@@ -296,22 +330,28 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                           <div className="text-[11px] text-slate-500 font-mono flex items-center space-x-1">
                             <Clock className="w-3 h-3" />
                             <span>
-                              {new Date(event.timestamp).toLocaleDateString('en-KE', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
+                              {new Date(event.timestamp).toLocaleDateString(
+                                "en-KE",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
                             </span>
                           </div>
                         </div>
 
-                          {/* Actor info */}
+                        {/* Actor info */}
                         <div className="text-xs text-slate-600 flex items-center space-x-2">
                           <User className="w-3.5 h-3.5 text-slate-400" />
                           <span>
-                            Actor: <strong className="text-slate-800">{event.actor.name}</strong> (
-                            {event.actor.role})
+                            Actor:{" "}
+                            <strong className="text-slate-800">
+                              {event.actor.name}
+                            </strong>{" "}
+                            ({event.actor.role})
                           </span>
                           <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-mono">
                             {event.channel}
@@ -322,35 +362,59 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                         {event.metadata && (
                           <div className="text-xs text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 space-y-1">
                             {event.metadata.weightKg !== undefined && (
-                              <div>Weight: <strong>{event.metadata.weightKg} kg</strong></div>
+                              <div>
+                                Weight:{" "}
+                                <strong>{event.metadata.weightKg} kg</strong>
+                              </div>
                             )}
-                            {event.metadata.temperatureCelsius !== undefined && (
-                              <div>Temperature: <strong>{event.metadata.temperatureCelsius}°C</strong> (Ice: {event.metadata.iceRatio || '1:1'})</div>
+                            {event.metadata.temperatureCelsius !==
+                              undefined && (
+                              <div>
+                                Temperature:{" "}
+                                <strong>
+                                  {event.metadata.temperatureCelsius}°C
+                                </strong>{" "}
+                                (Ice: {event.metadata.iceRatio || "1:1"})
+                              </div>
                             )}
                             {event.metadata.iceSource && (
-                              <div>Ice Source: <strong>{event.metadata.iceSource}</strong></div>
+                              <div>
+                                Ice Source:{" "}
+                                <strong>{event.metadata.iceSource}</strong>
+                              </div>
                             )}
                             {event.metadata.sensoryInspection && (
                               <div className="pt-1 text-[11px] border-t border-slate-100">
-                                <strong>FAO Sensory Audit:</strong> Eyes ({event.metadata.sensoryInspection.eyes}), Gills ({event.metadata.sensoryInspection.gills}), Odor ({event.metadata.sensoryInspection.odor})
+                                <strong>FAO Sensory Audit:</strong> Eyes (
+                                {event.metadata.sensoryInspection.eyes}), Gills
+                                ({event.metadata.sensoryInspection.gills}), Odor
+                                ({event.metadata.sensoryInspection.odor})
                               </div>
                             )}
                             {event.metadata.correctionReason && (
                               <div className="text-rose-700 bg-rose-50 p-2 rounded border border-rose-200 font-medium">
-                                <strong>Compensating Reason:</strong> {event.metadata.correctionReason}
+                                <strong>Compensating Reason:</strong>{" "}
+                                {event.metadata.correctionReason}
                               </div>
                             )}
-                            {event.metadata.notes && !event.metadata.correctionReason && (
-                              <div className="italic text-slate-600">Note: {event.metadata.notes}</div>
-                            )}
+                            {event.metadata.notes &&
+                              !event.metadata.correctionReason && (
+                                <div className="italic text-slate-600">
+                                  Note: {event.metadata.notes}
+                                </div>
+                              )}
                           </div>
                         )}
 
                         {/* Cryptographic Hash Trail */}
                         <div className="text-[10px] font-mono text-slate-400 flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200">
-                          <span>Prev: {event.previousEventHash.slice(0, 10)}...</span>
+                          <span>
+                            Prev: {event.previousEventHash.slice(0, 10)}...
+                          </span>
                           <ArrowRight className="w-2.5 h-2.5" />
-                          <span className="text-[#006064] font-bold">Hash: {event.eventHash}</span>
+                          <span className="text-[#006064] font-bold">
+                            Hash: {event.eventHash}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -373,7 +437,9 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
             <div className="bg-rose-900 text-white p-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="w-5 h-5 text-rose-300" />
-                <h3 className="font-bold text-base">Append Compensating Correction</h3>
+                <h3 className="font-bold text-base">
+                  Append Compensating Correction
+                </h3>
               </div>
               <button
                 onClick={() => setShowCompensateModal(false)}
@@ -387,8 +453,9 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
               <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900 space-y-1">
                 <strong>Immutable Ledger Principle:</strong>
                 <p>
-                  Historical records are never deleted or rewritten. This correction will append a new verified
-                  compensating block referencing the previous transaction.
+                  Historical records are never deleted or rewritten. This
+                  correction will append a new verified compensating block
+                  referencing the previous transaction.
                 </p>
               </div>
 
@@ -431,7 +498,9 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                   disabled={isAppending}
                   className="px-5 py-2 text-xs font-bold text-white bg-rose-700 hover:bg-rose-800 rounded-lg shadow-xs"
                 >
-                  {isAppending ? 'Appending Block...' : 'Confirm & Append Block'}
+                  {isAppending
+                    ? "Appending Block..."
+                    : "Confirm & Append Block"}
                 </button>
               </div>
             </form>
@@ -441,5 +510,3 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
     </div>
   );
 };
-
-
