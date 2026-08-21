@@ -208,3 +208,29 @@ export async function handleUSSDRequest(
       };
     }
   }
+
+  // OPTION 4: Record Batch Sale
+  if (rootChoice === '4') {
+    if (steps.length === 1) {
+      return {
+        response: 'CON Enter Batch ID sold:',
+        isTerminal: false,
+      };
+    }
+    if (steps.length === 2) {
+      return {
+        response: 'CON Enter Total Sale Amount in KES:',
+        isTerminal: false,
+      };
+    }
+    if (steps.length === 3) {
+      const amount = parseFloat(steps[2]) || 10000;
+      const directFee = Math.round(amount * 0.015);
+      const net = amount - directFee;
+
+      return {
+        response: `END Sale Logged!\nGross: KES ${amount.toLocaleString()}\nDirect Micro-Fee (1.5%): KES ${directFee.toLocaleString()}\nNet Fisher Earning: KES ${net.toLocaleString()}\nTransaction appended to ledger.`,
+        isTerminal: true,
+      };
+    }
+  }
