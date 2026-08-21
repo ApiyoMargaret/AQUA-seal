@@ -124,6 +124,45 @@ export const Navbar: React.FC<Props> = ({
             </select>
           </div>
 
+          {/* Network Simulator Mode Selector */}
+          <div className="flex items-center bg-black/20 border border-white/15 rounded-lg p-0.5 text-xs">
+            <button
+              onClick={() => setNetworkMode("ONLINE")}
+              className={`px-2.5 py-1 rounded flex items-center space-x-1 transition-colors ${
+                networkMode === "ONLINE"
+                  ? "bg-emerald-500 text-white font-bold"
+                  : "text-teal-100 hover:text-white"
+              }`}
+              title="Standard 4G/WiFi connection"
+            >
+              <div className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse mr-0.5" />
+              <span className="text-xs font-medium">Online</span>
+            </button>
+            <button
+              onClick={() => setNetworkMode("INTERMITTENT_2G")}
+              className={`px-2 py-1 rounded flex items-center space-x-1 transition-colors ${
+                networkMode === "INTERMITTENT_2G"
+                  ? "bg-amber-600 text-white font-bold"
+                  : "text-teal-100 hover:text-white"
+              }`}
+              title="Simulate 2G/intermittent edge network"
+            >
+              <span className="text-[11px]">2G</span>
+            </button>
+            <button
+              onClick={() => setNetworkMode("OFFLINE")}
+              className={`px-2 py-1 rounded flex items-center space-x-1 transition-colors ${
+                networkMode === "OFFLINE"
+                  ? "bg-rose-600 text-white font-bold"
+                  : "text-teal-100 hover:text-white"
+              }`}
+              title="Simulate landing beach without internet"
+            >
+              <WifiOff className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-xs">Offline</span>
+            </button>
+          </div>
+
 
         </div>
       </div>
@@ -204,7 +243,6 @@ export const Navbar: React.FC<Props> = ({
           </button>
         </div>
       </div>
-
     </header>
   );
 };
