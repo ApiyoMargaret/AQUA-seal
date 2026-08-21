@@ -265,3 +265,14 @@ export const TraceabilityLedgerView: React.FC<Props> = ({
                   </div>
                 </div>
               </div>
+              {/* Event Timeline */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                  <FileCheck className="w-4 h-4 text-[#004D40]" />
+                  <span>Cryptographic Event Sequence</span>
+                </h3>
+
+                <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                  {selectedBatch.events.map((event, idx) => (
+                    <div key={event.id} className="relative group"></div>
+
