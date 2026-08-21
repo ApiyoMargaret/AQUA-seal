@@ -60,3 +60,17 @@ export const Navbar: React.FC<Props> = ({
     updateCount();
     return offlineQueue.subscribe(updateCount);
   }, []);
+
+    const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      await offlineQueue.syncAll();
+      onRefreshData();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const currentSite = LANDING_SITES.find((s) => s.id === selectedSiteId) || LANDING_SITES[0];
